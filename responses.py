@@ -2,6 +2,8 @@ from random import choice, randint
 import datetime
 import discord
 import requests
+import os
+import openai
 from discord.ext import commands
 
 
@@ -51,6 +53,8 @@ def get_response(user_input: str) -> str:
         return handle_math(lowered)
     elif 'faq' in lowered:
         return get_faq(lowered)
+    elif 'chatgpt' in lowered:
+        return get_chatgpt_response(user_input)  # Calls ChatGPT API
     elif 'commands' in lowered or 'help' in lowered:
         return """Available commands:
 - Hello
@@ -231,6 +235,23 @@ def get_advice() -> str:
         return advice
     else:
         return 'Could not fetch advice at this time.'
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+def get_chatgpt_response(user_input: str) -> str:
+    try:
+        # Make a request to OpenAI's ChatGPT API
+        response = openai.Completion.create(
+            model="text-davinci-003",  # You can adjust this model as per your needs
+            prompt=user_input,
+            max_tokens=150,
+            n=1,
+            stop=None,
+            temperature=0.7,
+        )
+        return response.choices[0].text.strip()
+    except Exception as e:
+        return f"Error with OpenAI API: {str(e)}"
     
 
 def echo(user_input: str) -> str:
