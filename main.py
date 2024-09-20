@@ -33,6 +33,12 @@ async def shutdown(ctx):
     await bot.close()
 
 @bot.command()
+async def chatgpt(ctx, *, query):
+    """Handle ChatGPT queries."""
+    response = get_response(query)
+    await ctx.send(response)
+
+@bot.command()
 async def chucknorris(ctx):
     joke = get_chuck_norris_joke()
     await ctx.send(joke)
